@@ -45,13 +45,7 @@ public class NativePageTransitions extends CordovaPlugin {
     @Override
     public void onPageFinished(WebView view, String url) {
       super.onPageFinished(view, url);
-      if ("slide".equalsIgnoreCase(_action)) {
-        doSlideTransition();
-      } else if ("flip".equalsIgnoreCase(_action)) {
-        doFlipTransition();
-      } else if ("drawer".equalsIgnoreCase(_action)) {
-        doDrawerTransition();
-      }
+      doTransition();
     }
   }
 
@@ -85,9 +79,16 @@ public class NativePageTransitions extends CordovaPlugin {
 
   @Override
   public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
+	  if ("doTransition".equalsIgnoreCase(action)) {
+	    	calledFromJS = true;
+	    	doTransition();
+	    	_callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
+	    	return true;
+	    }  
+	  
     _action = action;
     _callbackContext = callbackContext;
-
+    
     final JSONObject json = args.getJSONObject(0);
     final String href = json.isNull("href") ? null : json.getString("href");
 
@@ -110,7 +111,8 @@ public class NativePageTransitions extends CordovaPlugin {
       }
     }
 
-    calledFromJS = true;
+    if (json.getBoolean("autotransition"))
+    	calledFromJS = true;
 
     // TODO move effects to separate classes, and reuse a lot of code
     if ("slide".equalsIgnoreCase(action)) {
@@ -254,9 +256,20 @@ public class NativePageTransitions extends CordovaPlugin {
         }
       });
     }
+    _callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
     return true;
   }
-
+  
+  private void doTransition() {
+      if ("slide".equalsIgnoreCase(_action)) {
+        doSlideTransition();
+      } else if ("flip".equalsIgnoreCase(_action)) {
+        doFlipTransition();
+      } else if ("drawer".equalsIgnoreCase(_action)) {
+        doDrawerTransition();
+      }
+    }
+  
   private void doFlipTransition() {
     if (!calledFromJS) {
       return;
@@ -420,12 +433,12 @@ public class NativePageTransitions extends CordovaPlugin {
             webView.setAnimation(webViewAnimation);
             layout.startLayoutAnimation();
 
-            if (BEFORE_KITKAT) {
+            //if (BEFORE_KITKAT) {
               // This fixes an issue observed on a Samsung Galaxy S3 /w Android 4.3 where the img is shown,
               // but the transition doesn't kick in unless the screen is touched again.
               imageView.requestFocusFromTouch();
               webView.requestFocus();
-            }
+            //}
 
             calledFromJS = false;
           }
