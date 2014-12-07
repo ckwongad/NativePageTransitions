@@ -104,7 +104,7 @@ public class NativePageTransitions extends CordovaPlugin {
           callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, "href .html file not found: " + href));
           return false;
         }
-      } else if (!href.startsWith("#")) {
+      } else if (!href.startsWith("#") && !href.startsWith("javascript:")) {
         callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, "href must be null, a .html file or a #navigationhash: " + href));
         return false;
       }
@@ -135,6 +135,8 @@ public class NativePageTransitions extends CordovaPlugin {
           if (href != null && !"null".equals(href)) {
             if (!href.startsWith("#") && href.contains(".html")) {
               webView.loadUrlIntoView("file:///android_asset/www/" + href, false);
+            } else if (href.startsWith("javascript:")) {
+              webView.loadUrlIntoView(href, false);
             } else {
               // it's a #hash
               String url = webView.getUrl();
@@ -198,6 +200,8 @@ public class NativePageTransitions extends CordovaPlugin {
           if (href != null && !"null".equals(href)) {
             if (!href.startsWith("#") && href.contains(".html")) {
               webView.loadUrlIntoView("file:///android_asset/www/" + href, false);
+            } else if (href.startsWith("javascript:")) {
+                webView.loadUrlIntoView(href, false);
             } else {
               // it's a #hash
               String url = webView.getUrl();
@@ -233,6 +237,8 @@ public class NativePageTransitions extends CordovaPlugin {
           if (href != null && !"null".equals(href)) {
             if (!href.startsWith("#") && href.contains(".html")) {
               webView.loadUrlIntoView("file:///android_asset/www/" + href, false);
+            } else if (href.startsWith("javascript:")) {
+                webView.loadUrlIntoView(href, false);
             } else {
               // it's a #hash
               String url = webView.getUrl();
