@@ -9,6 +9,10 @@ NativePageTransitions.prototype.globalOptions =  {
   slowdownfactor: 4
 };
 
+NativePageTransitions.prototype.doTransition = function (onSuccess, onError) {
+  cordova.exec(onSuccess, onError, "NativePageTransitions", "doTransition", []);
+};
+
 NativePageTransitions.prototype.slide = function (options, onSuccess, onError) {
   var opts = options || {};
   if (!this._validateHref(opts.href, onError)) {
